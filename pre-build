@@ -1,0 +1,32 @@
+#!/bin/bash -e
+APP="$1"; IMAGE="app/$APP"
+echo "-----> Injecting apt repositories and packages ..."
+
+DIR=/app
+
+COMMAND=$(cat <<EOF
+export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-repositories ]; then
+    apt-get install -y software-properties-common
+    cat "$DIR/apt-repositories" | while read repository; do
+        add-apt-repository -y \$repository
+    done
+    apt-get update
+fi
+if [ -f $DIR/apt-debconf ]; then
+    cat "$DIR/apt-debconf" | while read conf; do
+        echo \$conf | debconf-set-selections
+    done
+fi
+if [ -f $DIR/apt-packages ]; then
+    PACKAGES=\$(cat "$DIR/apt-packages" | tr "\\n" " ")
+    apt-get install -y \$PACKAGES
+    echo "-----> Injected packages: \$PACKAGES"
+fi
+EOF
+)
+id=$(docker run -d $IMAGE /bin/bash -c "$COMMAND")
+#enable logs
+docker attach $id
+test $(docker wait $id) -eq 0
+docker commit $id $IMAGE > /dev/null
