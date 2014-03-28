@@ -26,7 +26,7 @@ if [ -f $DIR/apt-packages ]; then
 fi
 EOF
 )
-id=$(docker run -d $IMAGE /bin/bash -c "$COMMAND")
+id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
 #enable logs
 docker attach $id
 test $(docker wait $id) -eq 0
