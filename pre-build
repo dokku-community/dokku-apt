@@ -10,7 +10,7 @@ if [ -f $DIR/apt-repositories ]; then
     apt-get update
     apt-get install -y software-properties-common
     cat "$DIR/apt-repositories" | while read repository; do
-        add-apt-repository -y \$repository
+        add-apt-repository -y "\$repository"
     done
 fi
 if [ -f $DIR/apt-debconf ]; then
