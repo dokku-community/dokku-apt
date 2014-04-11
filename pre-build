@@ -1,5 +1,5 @@
 #!/bin/bash -e
-APP="$1"; IMAGE="app/$APP"
+APP="$1"; IMAGE="dokku/$APP"
 echo "-----> Injecting apt repositories and packages ..."
 
 DIR=/app
