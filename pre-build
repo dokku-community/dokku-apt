@@ -24,6 +24,7 @@ if [ -f $DIR/apt-packages ]; then
     apt-get install -y \$PACKAGES
     echo "-----> Injected packages: \$PACKAGES"
 fi
+sleep 1 # wait so that docker run has not exited before docker attach
 EOF
 )
 id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
