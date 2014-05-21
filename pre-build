@@ -13,6 +13,11 @@ if [ -f $DIR/apt-repositories ]; then
         add-apt-repository -y "\$repository"
     done
 fi
+if [ -f $DIR/apt-lists ]; then
+    LISTS=\$(cat "$DIR/apt-lists" | tr "\\n" " ")
+    cp $DIR/apt-lists /etc/apt/sources.list.d/dokku-apt-lists.list
+    echo "-----> Injected lists: \$LISTS"
+fi
 if [ -f $DIR/apt-debconf ]; then
     cat "$DIR/apt-debconf" | while read conf; do
         echo \$conf | debconf-set-selections
