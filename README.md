@@ -27,5 +27,11 @@ Requires an empty line at end of file.
 Optional file allowing to configure package installation. Use case is mainly for EULA (like ttf-mscorefonts-installer).
 Requires an empty line at end of file.
 
+## apt-lists
+Optional file allowing to configure extra apt repositories. Contents could be e.g.
+```
+deb http://archive.ubuntu.com/ubuntu quantal multiverse
+```
+
 
 [dokku]: https://github.com/progrium/dokku
