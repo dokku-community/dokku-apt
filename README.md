@@ -19,6 +19,12 @@ All future deployments will read `apt-repositories` and `apt-packages` files and
 ## apt-packages
 This file should contain apt packages to install, accepts multiple packages per line, and multiple lines.
 
+Example:
+```
+nginx
+unifont
+```
+
 ## apt-repositories
 Optional file that should contain additional APT repositories to configure to find packages.
 Requires an empty line at end of file.
@@ -32,6 +38,11 @@ deb http://archive.ubuntu.com/ubuntu quantal multiverse
 ## apt-debconf
 Optional file allowing to configure package installation. Use case is mainly for EULA (like ttf-mscorefonts-installer).
 Requires an empty line at end of file.
+
+Example:
+```
+ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true
+```
 
 
 [dokku]: https://github.com/progrium/dokku
