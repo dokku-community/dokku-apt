@@ -20,8 +20,14 @@ All future deployments will read `apt-repositories` and `apt-packages` files and
 This file should contain apt packages to install, accepts multiple packages per line, and multiple lines.
 
 ## apt-repositories
-Optional file that should contain additional ppa to configure to find packages.
+Optional file that should contain additional APT repositories to configure to find packages.
 Requires an empty line at end of file.
+
+Example:
+```
+ppa:nginx/stable
+deb http://archive.ubuntu.com/ubuntu quantal multiverse
+```
 
 ## apt-debconf
 Optional file allowing to configure package installation. Use case is mainly for EULA (like ttf-mscorefonts-installer).
