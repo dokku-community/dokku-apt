@@ -6,6 +6,11 @@ DIR=/app
 
 COMMAND=$(cat <<EOF
 export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-preconfigure ]; then
+    cat "$DIR/apt-preconfigure" | while read command; do
+        \$command
+    done
+fi
 if [ -f $DIR/apt-repositories ]; then
     apt-get update
     apt-get install -y software-properties-common

@@ -25,6 +25,16 @@ nginx
 unifont
 ```
 
+## apt-preconfigure
+This file contains configuration commands that must be run before apt-get commands.
+Each line contains a command. No need to use sudo.
+
+Example:
+```
+dpkg --add-architecture i386
+dpkg --print-architecture
+```
+
 ## apt-repositories
 Optional file that should contain additional APT repositories to configure to find packages.
 Requires an empty line at end of file.
