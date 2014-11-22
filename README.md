@@ -14,7 +14,7 @@ git clone https://github.com/F4-Group/dokku-apt /var/lib/dokku/plugins/dokku-apt
 dokku plugins-install
 ```
 
-All future deployments will read `apt-repositories` and `apt-packages` files and install them using `apt-get`.
+When you deploy your project, the dokku-apt plugin will install according to your project's `apt-repositories` and `apt-packages` files. You should store these files in your projects root as the docker container will copy your project to its /app directory. This is where the dokku-apt plugin looks for `apt-repositories` and `apt-packages`.
 
 ## apt-packages
 This file should contain apt packages to install, accepts multiple packages per line, and multiple lines.
