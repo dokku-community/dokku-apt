@@ -24,6 +24,12 @@ if [ -f $DIR/apt-packages ]; then
     apt-get install -y \$PACKAGES
     echo "-----> Injected packages: \$PACKAGES"
 fi
+if [ -d $DIR/dpkg-packages ]; then
+    for pkg in $DIR/dpkg-packages/*.deb; do
+        dpkg -i \$pkg
+        echo "-----> Injected package: \$pkg"
+    done
+fi
 sleep 1 # wait so that docker run has not exited before docker attach
 EOF
 )
