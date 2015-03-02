@@ -44,5 +44,16 @@ Example:
 ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true
 ```
 
+## dpkg-packages
+Optional directory holding `.deb` packages to be installed automatically
+after `apt-packages`, `apt-repositories` and `apt-debconf`. Allows the
+installation of custom packages inside the container.
+
+Example:
+
+```
+$ ls dpkg-packages/
+your-package-0_0.0.1.deb
+```
 
 [dokku]: https://github.com/progrium/dokku
