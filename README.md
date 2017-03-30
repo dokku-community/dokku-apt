@@ -67,3 +67,15 @@ your-package-0_0.0.1.deb
 ```
 
 [dokku]: https://github.com/progrium/dokku
+
+## Specifying package versions
+
+You can specify a package version with '=1.2.3' after the package name. 
+
+Example:
+
+```
+libgd2-dev=2.1.1
+```
+
+
