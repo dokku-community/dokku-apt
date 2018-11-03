@@ -10,11 +10,12 @@ DIR=/app
 COMMAND=$(cat <<EOF
 export DEBIAN_FRONTEND=noninteractive
 if [ -f $DIR/apt-repositories ]; then
+    apt-get install -y language-pack-en-base
     apt-get update
     apt-get install -y software-properties-common apt-transport-https
     cat "$DIR/apt-repositories" | while read repository; do
         if [ -n "\$repository" ]; then
-            add-apt-repository -y "\$repository"
+            LC_ALL=C.UTF-8 add-apt-repository -y "\$repository"
         fi
     done
 fi
