@@ -9,6 +9,10 @@ DIR=/app
 
 COMMAND=$(cat <<EOF
 export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-sources-list ]; then
+    echo "-----> using customized sources.list ..."
+    mv -v $DIR/apt-sources-list /etc/apt/sources.list
+fi
 if [ -f $DIR/apt-repositories ]; then
     apt-get update
     apt-get install -y software-properties-common apt-transport-https
