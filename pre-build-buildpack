@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
 
-APP="$1"; IMAGE="dokku/$APP"
+APP="$1"
+IMAGE="dokku/$APP"
 echo "-----> Injecting apt repositories and packages ..."
 
 DIR=/app
 
-COMMAND=$(cat <<EOF
+COMMAND=$(
+  cat <<EOF
 export DEBIAN_FRONTEND=noninteractive
 if [ -f $DIR/apt-sources-list ]; then
     echo "-----> using customized sources.list ..."
@@ -48,4 +51,4 @@ id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
 #enable logs
 docker attach $id
 test $(docker wait $id) -eq 0
-docker commit $id $IMAGE > /dev/null
+docker commit $id $IMAGE >/dev/null
