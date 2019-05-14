@@ -24,11 +24,22 @@ When you deploy your project, the dokku-apt plugin will install according to you
 
 The order of operations is:
 
-1. `apt-sources-list`
-2. `apt-repositories`
-3. `apt-debconf`
-4. `apt-packages`
-5. `dpkg-packages`
+1. `apt-env`
+2. `apt-sources-list`
+3. `apt-repositories`
+4. `apt-debconf`
+5. `apt-packages`
+6. `dpkg-packages`
+
+### apt-env
+
+A file that can contain environment variables. Note that this is sourced, and should not contain arbitrary code.
+
+Example
+
+```
+ACCEPT_EULA=y
+```
 
 ### apt-sources-list
 Overrides the `/etc/apt/sources.list` file. An empty file may be provided in order to remove upstream packages.

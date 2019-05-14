@@ -12,6 +12,10 @@ DIR=/app
 COMMAND=$(
   cat <<EOF
 export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-env ]; then
+    echo "-----> sourcing apt env ..."
+    source $DIR/apt-env
+fi
 if [ -f $DIR/apt-sources-list ]; then
     echo "-----> using customized sources.list ..."
     mv -v $DIR/apt-sources-list /etc/apt/sources.list
