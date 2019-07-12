@@ -25,11 +25,12 @@ When you deploy your project, the dokku-apt plugin will install according to you
 The order of operations is:
 
 1. `apt-env`
-2. `apt-sources-list`
-3. `apt-repositories`
-4. `apt-debconf`
-5. `apt-packages`
-6. `dpkg-packages`
+2. `apt-preferences`
+3. `apt-sources-list`
+4. `apt-repositories`
+5. `apt-debconf`
+6. `apt-packages`
+7. `dpkg-packages`
 
 ### `apt-env`
 
@@ -39,6 +40,18 @@ Example
 
 ```
 ACCEPT_EULA=y
+```
+
+### `apt-preferences`
+
+A file that contains [APT Preferences](https://wiki.debian.org/AptPreferences). This file is not validated for correctness, and is installed to `/etc/apt/preferences.d/90customizations`.
+
+Example:
+
+```
+APT {
+  Install-Recommends "false";
+}
 ```
 
 ### `apt-sources-list`

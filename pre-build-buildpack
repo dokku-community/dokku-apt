@@ -16,6 +16,10 @@ if [ -f $DIR/apt-env ]; then
     echo "-----> sourcing apt env ..."
     source $DIR/apt-env
 fi
+if [ -d $DIR/apt-preferences ]; then
+    echo "-----> injecting apt preferences ..."
+    mv -v $DIR/apt-preferences /etc/apt/preferences.d/90customizations
+fi
 if [ -f $DIR/apt-sources-list ]; then
     echo "-----> using customized sources.list ..."
     mv -v $DIR/apt-sources-list /etc/apt/sources.list
