@@ -31,7 +31,7 @@ The order of operations is:
 5. `apt-packages`
 6. `dpkg-packages`
 
-### apt-env
+### `apt-env`
 
 A file that can contain environment variables. Note that this is sourced, and should not contain arbitrary code.
 
@@ -41,7 +41,8 @@ Example
 ACCEPT_EULA=y
 ```
 
-### apt-sources-list
+### `apt-sources-list`
+
 Overrides the `/etc/apt/sources.list` file. An empty file may be provided in order to remove upstream packages.
 
 Example:
@@ -52,7 +53,8 @@ deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe
 deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
 ```
 
-### apt-packages
+### `apt-packages`
+
 This file should contain apt packages to install, accepts multiple packages per line, and multiple lines.
 
 If this file is included, an `apt-get update` is triggered beforehand.
@@ -73,7 +75,7 @@ Example:
 libgd2-dev=2.1.1
 ```
 
-### apt-repositories
+### `apt-repositories`
 
 Optional file that should contain additional APT repositories to configure to find packages.
 
@@ -88,7 +90,7 @@ ppa:nginx/stable
 deb http://archive.ubuntu.com/ubuntu quantal multiverse
 ```
 
-### apt-debconf
+### `apt-debconf`
 
 Optional file allowing to configure package installation. Use case is mainly for EULA (like ttf-mscorefonts-installer).
 Requires an empty line at end of file.
@@ -99,7 +101,7 @@ Example:
 ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true
 ```
 
-### dpkg-packages
+### `dpkg-packages`
 
 Optional directory holding `.deb` packages to be installed automatically
 after `apt-packages`, `apt-repositories` and `apt-debconf`. Allows the
