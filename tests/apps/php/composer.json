@@ -1,0 +1,11 @@
+{
+  "description": "a test php app for dokku",
+  "name": "test-php-app/0.1",
+  "require": {
+    "php": ">=5.5.9"
+  },
+  "require-dev": {
+    "heroku/heroku-buildpack-php": "*"
+  },
+  "license": "MIT"
+}
