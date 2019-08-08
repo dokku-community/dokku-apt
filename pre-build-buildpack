@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
+export DOCKER_BIN=${DOCKER_BIN:="docker"}
 
 hook-apt-pre-build-buildpack() {
   declare APP="$1"
@@ -56,10 +57,11 @@ sleep 1 # wait so that docker run has not exited before docker attach
 EOF
   )
   CID=$(docker run -d "$IMAGE" /bin/bash -e -c "$COMMAND")
-  #enable logs
-  docker attach "$CID"
-  test "$(docker wait "$CID")" -eq 0
-  docker commit "$CID" "$IMAGE" >/dev/null
+  local DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL")
+
+  "$DOCKER_BIN" attach "$CID"
+  test "$("$DOCKER_BIN" wait "$CID")" -eq 0
+  "$DOCKER_BIN" commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE" >/dev/null
 }
 
 hook-apt-pre-build-buildpack "$@"
