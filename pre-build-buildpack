@@ -57,7 +57,7 @@ sleep 1 # wait so that docker run has not exited before docker attach
 EOF
   )
   CID=$(docker run -d "$IMAGE" /bin/bash -e -c "$COMMAND")
-  local DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL")
+  local DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL=")
 
   "$DOCKER_BIN" attach "$CID"
   test "$("$DOCKER_BIN" wait "$CID")" -eq 0
