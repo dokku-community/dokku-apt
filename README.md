@@ -38,6 +38,8 @@ The order of operations is:
 
 Utilizing the above files, the base build image will be extended for further use in the build process. If an already extended app image that is compatible with the desired changes is found, then the above will be skipped in favor of using the pre-existing image.
 
+Note that specifying packages within a `dpkg-packages` file will always bust the cache, as there is no way for the plugin to know if the files have changed between deploys.
+
 ### `apt-env`
 
 A file that can contain environment variables. Note that this is sourced, and should not contain arbitrary code.
