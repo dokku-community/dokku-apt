@@ -34,6 +34,9 @@ hook-apt-pre-build-buildpack() {
       INJECT_PACKAGES=true
       local file_contents=$(<$file)
       CONTENT="${CONTENT}\n${file}\n${file_contents}"
+      if [[ "$file" == "dpkg-packages" ]]; then
+        CONTENT="${CONTENT}$(date +%s)"
+      fi
     fi
   done
 
