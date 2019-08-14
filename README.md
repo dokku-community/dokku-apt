@@ -6,14 +6,18 @@ Inject deb packages into dokku based on files in project.
 dokku-apt is a plugin for [dokku](https://github.com/dokku/dokku) that installs apt packages in your dokku environment.
 This is mostly useful for instances where you have an app that depends on packages being here.
 
+## requirements
+
+dokku 0.18.x+
+docker 1.8.x
+
 ## Installation
 
 On your dokku server:
 
-### dokku >= 0.4.0
-
 ```sh
-sudo dokku plugin:install https://github.com/dokku-community/dokku-apt
+# on dokku 0.18.x+
+sudo dokku plugin:install https://github.com/dokku-community/dokku-apt apt
 ```
 
 ## Usage
@@ -31,6 +35,8 @@ The order of operations is:
 5. `apt-debconf`
 6. `apt-packages`
 7. `dpkg-packages`
+
+Utilizing the above files, the base build image will be extended for further use in the build process. If an already extended app image that is compatible with the desired changes is found, then the above will be skipped in favor of using the pre-existing image.
 
 ### `apt-env`
 
