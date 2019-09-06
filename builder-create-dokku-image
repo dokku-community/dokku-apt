@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+export DOCKER_BIN=${DOCKER_BIN:="docker"}
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/apt/internal-functions"
+
+hook-apt-builder-create-dokku-image() {
+  declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3" DOKKU_IMAGE="$4"
+  local IMAGE="dokku/$APP" DIR=/tmp/apt
+  local COMMAND CONTENT_SHA DOCKER_COMMIT_LABEL_ARGS DOCKER_RUN_LABEL_ARGS
+
+  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+    dokku_log_info1 "Rebuilding extended app image due to dpkg-packages usage"
+    return
+  fi
+
+  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR")"
+  if [[ -z "$CONTENT_SHA" ]]; then
+    return
+  fi
+
+  local TMP_WORK_DIR=$(mktemp -d "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")
+  trap "rm -rf '$TMP_WORK_DIR' >/dev/null" RETURN
+  fn-apt-populate-work-dir "$SOURCECODE_WORK_DIR" "$TMP_WORK_DIR"
+
+  if [[ "$("$DOCKER_BIN" images --quiet "dokku/$APP:$CONTENT_SHA" 2>/dev/null)" != "" ]]; then
+    dokku_log_info1 "Compatible extended app image found, skipping system package installation"
+    fn-clean-extended-app-images "$APP" "dokku/$APP:$CONTENT_SHA"
+    return
+  fi
+
+  dokku_log_info1 "Creating extended app image with custom system packages"
+  pushd "$TMP_WORK_DIR" >/dev/null
+  CID=$(tar -c . | "$DOCKER_BIN" run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -i -a stdin "$DOKKU_IMAGE" /bin/bash -c "mkdir -p /tmp/apt && tar -xC /tmp/apt")
+  popd >/dev/null
+  if test "$("$DOCKER_BIN" wait "$CID")" -ne 0; then
+    dokku_log_warn "Failure extracting apt files"
+    return 1
+  fi
+
+  DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL=")
+  "$DOCKER_BIN" commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE:apt" >/dev/null
+  "$DOCKER_BIN" rm "$CID" &>/dev/null || true
+
+  COMMAND="$(fn-apt-command "$APP" "$DOKKU_IMAGE" "/tmp/apt")"
+  DOCKER_RUN_LABEL_ARGS="--label=com.dokku.app-name=$APP"
+  CID=$("$DOCKER_BIN" run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -d "$IMAGE:apt" /bin/bash -e -c "$COMMAND")
+
+  "$DOCKER_BIN" attach "$CID"
+  if test "$("$DOCKER_BIN" wait "$CID")" -ne 0; then
+    dokku_log_warn "Failure installing system packages"
+    return 1
+  fi
+
+  DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=sha-$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL=")
+  "$DOCKER_BIN" commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "dokku/$APP:$CONTENT_SHA" >/dev/null
+  "$DOCKER_BIN" rm "$CID" &>/dev/null || true
+  "$DOCKER_BIN" rmi "$IMAGE:apt" &>/dev/null || true
+  fn-clean-extended-app-images "$APP" "dokku/$APP:$CONTENT_SHA"
+}
+
+hook-apt-builder-create-dokku-image "$@"

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+export DOCKER_BIN=${DOCKER_BIN:="docker"}
+source "$PLUGIN_AVAILABLE_PATH/apt/internal-functions"
+
+hook-apt-builder-dokku-image() {
+  declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3"
+  local IMAGE="dokku/$APP"
+  local CONTENT_SHA
+
+  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+    return
+  fi
+
+  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR")"
+  if [[ -z "$CONTENT_SHA" ]]; then
+    return
+  fi
+
+  if [[ "$("$DOCKER_BIN" images --quiet "$IMAGE:$CONTENT_SHA" 2>/dev/null)" != "" ]]; then
+    echo "$IMAGE:$CONTENT_SHA"
+    return
+  fi
+}
+
+hook-apt-builder-dokku-image "$@"
