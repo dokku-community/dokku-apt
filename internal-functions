@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+export DOCKER_BIN=${DOCKER_BIN:="docker"}
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+
+fn-clean-extended-app-images() {
+  declare APP="$1" IMAGE="$2"
+  local images
+
+  # remove dangling extended app images
+  "$DOCKER_BIN" rmi $("$DOCKER_BIN" images --format 'dangling=true' --format "label=com.dokku.app-name=sha-$APP" --quiet) &>/dev/null || true
+
+  images="$("$DOCKER_BIN" images --filter "label=com.dokku.app-name=sha-$APP" --quiet)"
+  for image in $images; do
+    if [[ "$("$DOCKER_BIN" inspect --format '{{(index .RepoTags 0)}}' "$image" 2>/dev/null)" != "$IMAGE" ]]; then
+      "$DOCKER_BIN" rmi "$image" &>/dev/null || true
+    fi
+  done
+}
+
+fn-apt-fetch-sha() {
+  declare SOURCECODE_WORK_DIR="$1"
+  local APT_FILES CONTENT INJECT_PACKAGES file
+
+  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+    return
+  fi
+
+  APT_FILES=('apt-env' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  for file in "${APT_FILES[@]}"; do
+    if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
+      INJECT_PACKAGES=true
+      local file_contents=$(<$SOURCECODE_WORK_DIR/$file)
+      CONTENT="${CONTENT}\n${file}\n${file_contents}"
+    fi
+  done
+
+  if [[ "$INJECT_PACKAGES" != "true" ]]; then
+    return
+  fi
+
+  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)$CONTENT" | sha256sum | cut -d " " -f 1
+}
+
+fn-apt-populate-work-dir() {
+  declare SOURCECODE_WORK_DIR="$1" TMP_WORK_DIR="$2"
+  local APT_FILES file
+
+  APT_FILES=('apt-env' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  for file in "${APT_FILES[@]}"; do
+    if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
+      cp "$SOURCECODE_WORK_DIR/$file" "$TMP_WORK_DIR/$file"
+    fi
+  done
+}
+
+fn-apt-command() {
+  declare APP="$1" DOKKU_IMAGE="$2" DIR="$3"
+  cat <<EOF
+# $APP $DOKKU_IMAGE
+sleep 2
+export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-env ]; then
+    echo "-----> Sourcing apt env"
+    source $DIR/apt-env
+fi
+if [ -d $DIR/apt-preferences ]; then
+    echo "-----> Injecting apt preferences"
+    mv -v $DIR/apt-preferences /etc/apt/preferences.d/90customizations
+fi
+if [ -f $DIR/apt-sources-list ]; then
+    echo "-----> Using customized sources.list"
+    mv -v $DIR/apt-sources-list /etc/apt/sources.list
+fi
+if [ -f $DIR/apt-repositories ]; then
+    echo "-----> Updating package list"
+    apt-get update >/dev/null
+    echo "-----> Installing required apt transport packages"
+    apt-get install -y software-properties-common apt-transport-https
+    echo "-----> Installing custom apt repositories"
+    cat "$DIR/apt-repositories" | while read repository; do
+        if [ -n "\$repository" ]; then
+            add-apt-repository -y "\$repository"
+        fi
+    done
+fi
+if [ -f $DIR/apt-debconf ]; then
+    cat "$DIR/apt-debconf" | while read conf; do
+        if [ -n "\$conf" ]; then
+            echo \$conf | debconf-set-selections
+        fi
+    done
+fi
+if [ -f $DIR/apt-packages ]; then
+    PACKAGES=\$(cat "$DIR/apt-packages" | tr "\\n" " ")
+    echo "-----> Updating package list"
+    apt-get update >/dev/null
+    echo "-----> Injecting packages: \$PACKAGES"
+    apt-get install -y \$PACKAGES
+fi
+if [ -d $DIR/dpkg-packages ]; then
+    for pkg in $DIR/dpkg-packages/*.deb; do
+        echo "-----> Injecting package: \$pkg"
+        dpkg -i \$pkg
+    done
+fi
+rm -rf /tmp/apt
+sleep 1 # wait so that docker run has not exited before docker attach
+EOF
+}
