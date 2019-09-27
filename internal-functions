@@ -23,7 +23,7 @@ fn-apt-fetch-sha() {
   declare SOURCECODE_WORK_DIR="$1"
   local APT_FILES CONTENT INJECT_PACKAGES file
 
-  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+  if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
     return
   fi
 

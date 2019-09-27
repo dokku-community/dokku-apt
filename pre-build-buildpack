@@ -14,7 +14,7 @@ hook-apt-pre-build-buildpack() {
     pushd "$SOURCECODE_WORK_DIR" >/dev/null
   fi
 
-  if [[ ! -f "dpkg-packages" ]]; then
+  if [[ ! -d "dpkg-packages" ]]; then
     return
   fi
 

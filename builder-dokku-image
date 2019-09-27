@@ -9,7 +9,7 @@ hook-apt-builder-dokku-image() {
   local IMAGE="dokku/$APP"
   local CONTENT_SHA
 
-  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+  if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
     return
   fi
 
