@@ -10,7 +10,7 @@ hook-apt-builder-create-dokku-image() {
   local IMAGE="dokku/$APP" DIR=/tmp/apt
   local COMMAND CONTENT_SHA DOCKER_COMMIT_LABEL_ARGS DOCKER_RUN_LABEL_ARGS
 
-  if [[ -f "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
+  if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
     dokku_log_info1 "Rebuilding extended app image due to dpkg-packages usage"
     return
   fi
