@@ -9,6 +9,8 @@ hook-apt-pre-build-buildpack() {
   declare APP="$1" SOURCECODE_WORK_DIR="$2"
   local IMAGE="dokku/$APP" DIR=/app
   local CID COMMAND DOCKER_COMMIT_LABEL_ARGS
+  # This trigger is only called with apps using buildpacks, so it's safe to assume this:
+  local BUILDER_TYPE=herokuish
 
   if [[ -n "$SOURCECODE_WORK_DIR" ]]; then
     pushd "$SOURCECODE_WORK_DIR" >/dev/null
@@ -22,9 +24,13 @@ hook-apt-pre-build-buildpack() {
     popd >/dev/null
   fi
 
+  local DOCKER_ARGS=$(: | plugn trigger docker-args-build "$APP" "$BUILDER_TYPE")
+  declare -a ARG_ARRAY
+  eval "ARG_ARRAY=($DOCKER_ARGS)"
+
   dokku_log_info1 "Creating extended app image with custom system packages"
   COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
-  CID=$(docker run -d "$IMAGE" /bin/bash -e -c "$COMMAND")
+  CID=$(docker run -d "${ARG_ARRAY[@]}" "$IMAGE" /bin/bash -e -c "$COMMAND")
 
   "$DOCKER_BIN" attach "$CID"
   if test "$("$DOCKER_BIN" wait "$CID")" -ne 0; then
