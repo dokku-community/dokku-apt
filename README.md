@@ -47,7 +47,7 @@ A file that can contain environment variables. Note that this is sourced, and sh
 Example
 
 ```
-ACCEPT_EULA=y
+export ACCEPT_EULA=y
 ```
 
 ### `apt-preferences`
