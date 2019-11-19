@@ -43,9 +43,13 @@ hook-apt-builder-create-dokku-image() {
   "$DOCKER_BIN" commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE:apt" >/dev/null
   "$DOCKER_BIN" rm "$CID" &>/dev/null || true
 
+  local DOCKER_ARGS=$(: | plugn trigger docker-args-build "$APP" "$BUILDER_TYPE")
+  declare -a ARG_ARRAY
+  eval "ARG_ARRAY=($DOCKER_ARGS)"
+
   COMMAND="$(fn-apt-command "$APP" "$DOKKU_IMAGE" "/tmp/apt")"
   DOCKER_RUN_LABEL_ARGS="--label=com.dokku.app-name=$APP"
-  CID=$("$DOCKER_BIN" run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -d "$IMAGE:apt" /bin/bash -e -c "$COMMAND")
+  CID=$("$DOCKER_BIN" run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -d "${ARG_ARRAY[@]}" "$IMAGE:apt" /bin/bash -e -c "$COMMAND")
 
   "$DOCKER_BIN" attach "$CID"
   if test "$("$DOCKER_BIN" wait "$CID")" -ne 0; then
