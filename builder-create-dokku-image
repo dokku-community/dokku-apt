@@ -48,6 +48,11 @@ hook-apt-builder-create-dokku-image() {
   eval "ARG_ARRAY=($DOCKER_ARGS)"
 
   COMMAND="$(fn-apt-command "$APP" "$DOKKU_IMAGE" "/tmp/apt")"
+
+  if [[ "$UPDATE_CA_CERTS" == "1" ]]; then
+      COMMAND="update-ca-certificates && $COMMAND"
+  fi
+
   DOCKER_RUN_LABEL_ARGS="--label=com.dokku.app-name=$APP"
   CID=$("$DOCKER_BIN" run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -d "${ARG_ARRAY[@]}" "$IMAGE:apt" /bin/bash -e -c "$COMMAND")
 

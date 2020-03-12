@@ -16,7 +16,7 @@ hook-apt-pre-build-buildpack() {
     pushd "$SOURCECODE_WORK_DIR" >/dev/null
   fi
 
-  if [[ ! -d "dpkg-packages" ]]; then
+  if [[ ! -d "dpkg-packages" && "$UPDATE_CA_CERTS" != "1" ]]; then
     return
   fi
 
@@ -28,8 +28,15 @@ hook-apt-pre-build-buildpack() {
   declare -a ARG_ARRAY
   eval "ARG_ARRAY=($DOCKER_ARGS)"
 
-  dokku_log_info1 "Creating extended app image with custom system packages"
-  COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
+  if [[ -d "dpkg-packages" ]]; then
+    dokku_log_info1 "Creating extended app image with custom system packages"
+    COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
+  fi
+
+  if [[ "$UPDATE_CA_CERTS" == "1" ]]; then
+    COMMAND="update-ca-certificates && $COMMAND"
+  fi
+
   CID=$(docker run -d "${ARG_ARRAY[@]}" "$IMAGE" /bin/bash -e -c "$COMMAND")
 
   "$DOCKER_BIN" attach "$CID"
