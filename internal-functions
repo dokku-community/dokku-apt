@@ -27,7 +27,7 @@ fn-apt-fetch-sha() {
     return
   fi
 
-  APT_FILES=('apt-env' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  APT_FILES=('apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
   for file in "${APT_FILES[@]}"; do
     if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
       INJECT_PACKAGES=true
@@ -47,7 +47,7 @@ fn-apt-populate-work-dir() {
   declare SOURCECODE_WORK_DIR="$1" TMP_WORK_DIR="$2"
   local APT_FILES file
 
-  APT_FILES=('apt-env' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  APT_FILES=('apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
   for file in "${APT_FILES[@]}"; do
     if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
       cp "$SOURCECODE_WORK_DIR/$file" "$TMP_WORK_DIR/$file"
@@ -64,6 +64,16 @@ export DEBIAN_FRONTEND=noninteractive
 if [ -f $DIR/apt-env ]; then
     echo "-----> Sourcing apt env"
     source $DIR/apt-env
+fi
+if [ -f $DIR/apt-keys ]; then
+    echo "-----> Installing custom apt repository keys"
+    cat "$DIR/apt-keys" | while read key; do
+        if [ -n "\$key" ]; then
+            curl -sS "\$key" > /tmp/repository.key
+            echo "       Installing \$key (sha256sum: \$(sha256sum /tmp/repository.key | cut -d' ' -f1))"
+            cat /tmp/repository.key | apt-key add - >/dev/null
+        fi
+    done
 fi
 if [ -d $DIR/apt-preferences ]; then
     echo "-----> Injecting apt preferences"

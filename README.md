@@ -29,12 +29,13 @@ When you deploy your project, the dokku-apt plugin will install according to you
 The order of operations is:
 
 1. `apt-env`
-2. `apt-preferences`
-3. `apt-sources-list`
-4. `apt-repositories`
-5. `apt-debconf`
-6. `apt-packages`
-7. `dpkg-packages`
+2. `apt-keys`
+3. `apt-preferences`
+4. `apt-sources-list`
+5. `apt-repositories`
+6. `apt-debconf`
+7. `apt-packages`
+8. `dpkg-packages`
 
 Utilizing the above files, the base build image will be extended for further use in the build process. If an already extended app image that is compatible with the desired changes is found, then the above will be skipped in favor of using the pre-existing image.
 
@@ -48,6 +49,18 @@ Example
 
 ```
 export ACCEPT_EULA=y
+```
+
+### `apt-keys`
+
+> Usage of apt-keys without verifying the ownership of the key may result in compromising your apt infrastructure.
+
+A file that can contain a list of urls for apt repository keys. Each one is installed via `curl "$KEY_URL" | apt-key add -`. Redirects are not followed. The `sha256sum` of the key contents will be displayed to allow for key verification.
+
+Example
+
+```
+https://packages.microsoft.com/keys/microsoft.asc
 ```
 
 ### `apt-preferences`
