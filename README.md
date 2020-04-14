@@ -28,18 +28,29 @@ When you deploy your project, the dokku-apt plugin will install according to you
 
 The order of operations is:
 
-1. `apt-env`
-2. `apt-keys`
-3. `apt-preferences`
-4. `apt-sources-list`
-5. `apt-repositories`
-6. `apt-debconf`
-7. `apt-packages`
-8. `dpkg-packages`
+1. `apt-conf`
+2. `apt-env`
+3. `apt-keys`
+4. `apt-preferences`
+5. `apt-sources-list`
+6. `apt-repositories`
+7. `apt-debconf`
+8. `apt-packages`
+9. `dpkg-packages`
 
 Utilizing the above files, the base build image will be extended for further use in the build process. If an already extended app image that is compatible with the desired changes is found, then the above will be skipped in favor of using the pre-existing image.
 
 Note that specifying packages within a `dpkg-packages` file will always bust the cache, as there is no way for the plugin to know if the files have changed between deploys.
+
+### `apt-conf`
+
+A config file for apt, as documented [here](https://linux.die.net/man/5/apt.conf). This is moved to the folder `/etc/apt/apt.conf.d/99dokku-apt`, and can override any `apt.conf` files that come before it in lexicographical order.
+
+Example
+
+```
+Acquire::http::Proxy "http://user:password@proxy.example.com:8888/";
+```
 
 ### `apt-env`
 

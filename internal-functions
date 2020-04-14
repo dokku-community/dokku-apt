@@ -27,7 +27,7 @@ fn-apt-fetch-sha() {
     return
   fi
 
-  APT_FILES=('apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  APT_FILES=('apt-conf' 'apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
   for file in "${APT_FILES[@]}"; do
     if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
       INJECT_PACKAGES=true
@@ -47,7 +47,7 @@ fn-apt-populate-work-dir() {
   declare SOURCECODE_WORK_DIR="$1" TMP_WORK_DIR="$2"
   local APT_FILES file
 
-  APT_FILES=('apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
+  APT_FILES=('apt-conf' 'apt-env' 'apt-keys' 'apt-preferences' 'apt-sources-list' 'apt-repositories' 'apt-debconf' 'apt-packages')
   for file in "${APT_FILES[@]}"; do
     if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
       cp "$SOURCECODE_WORK_DIR/$file" "$TMP_WORK_DIR/$file"
@@ -61,6 +61,11 @@ fn-apt-command() {
 # $APP $DOKKU_IMAGE
 sleep 2
 export DEBIAN_FRONTEND=noninteractive
+if [ -f $DIR/apt-conf ]; then
+    echo "-----> Copying apt-conf file into place"
+    mv -v $DIR/apt-conf /etc/apt/apt.conf.d/99dokku-apt
+fi
+
 if [ -f $DIR/apt-env ]; then
     echo "-----> Sourcing apt env"
     source $DIR/apt-env
