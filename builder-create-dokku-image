@@ -15,7 +15,7 @@ hook-apt-builder-create-dokku-image() {
     return
   fi
 
-  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR")"
+  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR" "$DOKKU_IMAGE")"
   if [[ -z "$CONTENT_SHA" ]]; then
     return
   fi
