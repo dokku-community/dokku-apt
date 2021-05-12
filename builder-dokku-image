@@ -5,7 +5,7 @@ export DOCKER_BIN=${DOCKER_BIN:="docker"}
 source "$PLUGIN_AVAILABLE_PATH/apt/internal-functions"
 
 hook-apt-builder-dokku-image() {
-  declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3"
+  declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3" DOKKU_IMAGE="$4"
   local IMAGE="dokku/$APP"
   local CONTENT_SHA
 
@@ -13,7 +13,7 @@ hook-apt-builder-dokku-image() {
     return
   fi
 
-  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR")"
+  CONTENT_SHA="$(fn-apt-fetch-sha "$SOURCECODE_WORK_DIR" "$DOKKU_IMAGE")"
   if [[ -z "$CONTENT_SHA" ]]; then
     return
   fi

@@ -20,7 +20,7 @@ fn-clean-extended-app-images() {
 }
 
 fn-apt-fetch-sha() {
-  declare SOURCECODE_WORK_DIR="$1"
+  declare SOURCECODE_WORK_DIR="$1" DOKKU_IMAGE="$2"
   local APT_FILES CONTENT INJECT_PACKAGES file
 
   if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
@@ -40,7 +40,7 @@ fn-apt-fetch-sha() {
     return
   fi
 
-  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)$CONTENT" | sha256sum | cut -d " " -f 1
+  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)${DOKKU_IMAGE}${CONTENT}" | sha256sum | cut -d " " -f 1
 }
 
 fn-apt-populate-work-dir() {
