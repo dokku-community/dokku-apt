@@ -68,6 +68,8 @@ export ACCEPT_EULA=y
 
 A file that can contain a list of urls for apt repository keys. Each one is installed via `curl "$KEY_URL" | apt-key add -`. Redirects are not followed. The `sha256sum` of the key contents will be displayed to allow for key verification.
 
+Requires an empty line at end of file.
+
 Example
 
 ```
