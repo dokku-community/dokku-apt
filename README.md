@@ -8,7 +8,7 @@ This is mostly useful for instances where you have an app that depends on packag
 
 ## requirements
 
-dokku 0.18.x+
+dokku 0.32.x+
 docker 1.8.x
 
 ## Installation

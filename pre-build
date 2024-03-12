@@ -5,8 +5,8 @@ export DOCKER_BIN=${DOCKER_BIN:="docker"}
 source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 source "$PLUGIN_AVAILABLE_PATH/apt/internal-functions"
 
-hook-apt-pre-build-buildpack() {
-  declare APP="$1" SOURCECODE_WORK_DIR="$2"
+hook-apt-pre-build() {
+  declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3"
   local IMAGE="dokku/$APP" DIR=/app
   local CID COMMAND DOCKER_COMMIT_LABEL_ARGS
   # This trigger is only called with apps using buildpacks, so it's safe to assume this:
@@ -43,4 +43,4 @@ hook-apt-pre-build-buildpack() {
   "$DOCKER_BIN" rm "$CID" &>/dev/null || true
 }
 
-hook-apt-pre-build-buildpack "$@"
+hook-apt-pre-build "$@"
