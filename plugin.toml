@@ -1,6 +1,6 @@
 [plugin]
 name = "dokku-apt"
 description = "Inject deb packages into dokku based on files in project"
-version = "0.13.0"
-website_url = "https://github.com/F4-Group/dokku-apt"
+version = "0.12.0"
+website_url = "https://github.com/dokku-community/dokku-apt"
 [plugin.config]
