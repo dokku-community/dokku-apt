@@ -17,7 +17,7 @@ On your dokku server:
 
 ```sh
 # on dokku 0.18.x+
-sudo dokku plugin:install https://github.com/dokku-community/dokku-apt apt
+sudo dokku plugin:install https://github.com/dokku-community/dokku-apt
 ```
 
 ## Usage
