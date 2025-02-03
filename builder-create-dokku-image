@@ -9,6 +9,7 @@ hook-apt-builder-create-dokku-image() {
   declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3" DOKKU_IMAGE="$4"
   local IMAGE="dokku/$APP"
   local COMMAND CONTENT_SHA DOCKER_COMMIT_LABEL_ARGS DOCKER_RUN_LABEL_ARGS
+  local TMP_WORK_DIR DOCKER_ARGS
 
   if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
     dokku_log_info1 "Rebuilding extended app image due to dpkg-packages usage"
@@ -20,7 +21,8 @@ hook-apt-builder-create-dokku-image() {
     return
   fi
 
-  local TMP_WORK_DIR=$(mktemp -d "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")
+  TMP_WORK_DIR=$(mktemp -d "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")
+  # shellcheck disable=SC2064
   trap "rm -rf '$TMP_WORK_DIR' >/dev/null" RETURN
   fn-apt-populate-work-dir "$SOURCECODE_WORK_DIR" "$TMP_WORK_DIR"
 
@@ -43,7 +45,7 @@ hook-apt-builder-create-dokku-image() {
   "$DOCKER_BIN" container commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE:apt" >/dev/null
   "$DOCKER_BIN" container rm "$CID" &>/dev/null || true
 
-  local DOCKER_ARGS=$(: | plugn trigger docker-args-build "$APP" "$BUILDER_TYPE")
+  DOCKER_ARGS=$(: | plugn trigger docker-args-build "$APP" "$BUILDER_TYPE")
   declare -a ARG_ARRAY
   eval "ARG_ARRAY=($DOCKER_ARGS)"
 
