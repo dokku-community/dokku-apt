@@ -32,15 +32,15 @@ hook-apt-pre-build() {
   COMMAND="$(fn-apt-command "$APP" "$IMAGE" "$DIR")"
   CID=$(docker run -d "${ARG_ARRAY[@]}" "$IMAGE" /bin/bash -e -c "$COMMAND")
 
-  "$DOCKER_BIN" attach "$CID"
-  if test "$("$DOCKER_BIN" wait "$CID")" -ne 0; then
+  "$DOCKER_BIN" container attach "$CID"
+  if test "$("$DOCKER_BIN" container wait "$CID")" -ne 0; then
     dokku_log_warn "Failure installing system packages"
     return 1
   fi
 
   DOCKER_COMMIT_LABEL_ARGS=("--change" "LABEL org.label-schema.schema-version=1.0" "--change" "LABEL org.label-schema.vendor=dokku" "--change" "LABEL com.dokku.app-name=$APP" "--change" "LABEL $DOKKU_CONTAINER_LABEL=")
-  "$DOCKER_BIN" commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE" >/dev/null
-  "$DOCKER_BIN" rm "$CID" &>/dev/null || true
+  "$DOCKER_BIN" container commit "${DOCKER_COMMIT_LABEL_ARGS[@]}" "$CID" "$IMAGE" >/dev/null
+  "$DOCKER_BIN" container rm "$CID" &>/dev/null || true
 }
 
 hook-apt-pre-build "$@"
