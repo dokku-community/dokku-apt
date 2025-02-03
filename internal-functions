@@ -9,12 +9,12 @@ fn-clean-extended-app-images() {
   local images
 
   # remove dangling extended app images
-  "$DOCKER_BIN" rmi $("$DOCKER_BIN" images --format 'dangling=true' --format "label=com.dokku.app-name=sha-$APP" --quiet) &>/dev/null || true
+  "$DOCKER_BIN" image rm $("$DOCKER_BIN" image ls --format 'dangling=true' --format "label=com.dokku.app-name=sha-$APP" --quiet) &>/dev/null || true
 
-  images="$("$DOCKER_BIN" images --filter "label=com.dokku.app-name=sha-$APP" --quiet)"
+  images="$("$DOCKER_BIN" image ls --filter "label=com.dokku.app-name=sha-$APP" --quiet)"
   for image in $images; do
-    if [[ "$("$DOCKER_BIN" inspect --format '{{(index .RepoTags 0)}}' "$image" 2>/dev/null)" != "$IMAGE" ]]; then
-      "$DOCKER_BIN" rmi "$image" &>/dev/null || true
+    if [[ "$("$DOCKER_BIN" image inspect --format '{{(index .RepoTags 0)}}' "$image" 2>/dev/null)" != "$IMAGE" ]]; then
+      "$DOCKER_BIN" image rm "$image" &>/dev/null || true
     fi
   done
 }

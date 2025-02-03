@@ -18,7 +18,7 @@ hook-apt-builder-dokku-image() {
     return
   fi
 
-  if [[ "$("$DOCKER_BIN" images --quiet "$IMAGE:$CONTENT_SHA" 2>/dev/null)" != "" ]]; then
+  if [[ "$("$DOCKER_BIN" image ls --quiet "$IMAGE:$CONTENT_SHA" 2>/dev/null)" != "" ]]; then
     echo "$IMAGE:$CONTENT_SHA"
     return
   fi
