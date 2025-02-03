@@ -7,7 +7,7 @@ source "$PLUGIN_AVAILABLE_PATH/apt/internal-functions"
 
 hook-apt-builder-create-dokku-image() {
   declare BUILDER_TYPE="$1" APP="$2" SOURCECODE_WORK_DIR="$3" DOKKU_IMAGE="$4"
-  local IMAGE="dokku/$APP" DIR=/tmp/apt
+  local IMAGE="dokku/$APP"
   local COMMAND CONTENT_SHA DOCKER_COMMIT_LABEL_ARGS DOCKER_RUN_LABEL_ARGS
 
   if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
