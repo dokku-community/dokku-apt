@@ -9,6 +9,7 @@ fn-clean-extended-app-images() {
   local images
 
   # remove dangling extended app images
+  # shellcheck disable=SC2046
   "$DOCKER_BIN" image rm $("$DOCKER_BIN" image ls --format 'dangling=true' --format "label=com.dokku.app-name=sha-$APP" --quiet) &>/dev/null || true
 
   images="$("$DOCKER_BIN" image ls --filter "label=com.dokku.app-name=sha-$APP" --quiet)"
@@ -21,7 +22,7 @@ fn-clean-extended-app-images() {
 
 fn-apt-fetch-sha() {
   declare SOURCECODE_WORK_DIR="$1" DOKKU_IMAGE="$2"
-  local APT_FILES CONTENT INJECT_PACKAGES file
+  local APT_FILES CONTENT INJECT_PACKAGES file file_contents
 
   if [[ -d "$SOURCECODE_WORK_DIR/dpkg-packages" ]]; then
     return
@@ -31,7 +32,7 @@ fn-apt-fetch-sha() {
   for file in "${APT_FILES[@]}"; do
     if [[ -f "$SOURCECODE_WORK_DIR/$file" ]]; then
       INJECT_PACKAGES=true
-      local file_contents=$(<$SOURCECODE_WORK_DIR/$file)
+      file_contents="$(<"$SOURCECODE_WORK_DIR/$file")"
       CONTENT="${CONTENT}\n${file}\n${file_contents}"
     fi
   done
@@ -43,7 +44,7 @@ fn-apt-fetch-sha() {
   local image_digest
   image_digest="$("$DOCKER_BIN" image inspect --format='{{index .RepoDigests 0}}' "$DOKKU_IMAGE" 2>/dev/null || echo "$DOKKU_IMAGE")"
 
-  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)${image_digest}${CONTENT}" | sha256sum | cut -d " " -f 1
+  echo -n "$(<"$PLUGIN_AVAILABLE_PATH/apt/plugin.toml")${image_digest}${CONTENT}" | sha256sum | cut -d " " -f 1
 }
 
 fn-apt-populate-work-dir() {
