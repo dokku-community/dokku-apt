@@ -40,7 +40,10 @@ fn-apt-fetch-sha() {
     return
   fi
 
-  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)${DOKKU_IMAGE}${CONTENT}" | sha256sum | cut -d " " -f 1
+  local image_digest
+  image_digest="$("$DOCKER_BIN" image inspect --format='{{index .RepoDigests 0}}' "$DOKKU_IMAGE" 2>/dev/null || echo "$DOKKU_IMAGE")"
+
+  echo -n "$(<$PLUGIN_AVAILABLE_PATH/apt/plugin.toml)${image_digest}${CONTENT}" | sha256sum | cut -d " " -f 1
 }
 
 fn-apt-populate-work-dir() {
