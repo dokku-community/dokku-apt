@@ -1,5 +1,4 @@
-dokku-apt
-=========
+# dokku-apt
 
 Inject deb packages into dokku based on files in project.
 
@@ -48,7 +47,7 @@ A config file for apt, as documented [here](https://linux.die.net/man/5/apt.conf
 
 Example
 
-```
+```shell
 Acquire::http::Proxy "http://user:password@proxy.example.com:8888/";
 ```
 
@@ -58,7 +57,7 @@ A file that can contain environment variables. Note that this is sourced, and sh
 
 Example
 
-```
+```shell
 export ACCEPT_EULA=y
 ```
 
@@ -72,7 +71,7 @@ Requires an empty line at end of file.
 
 Example
 
-```
+```shell
 https://packages.microsoft.com/keys/microsoft.asc
 ```
 
@@ -82,7 +81,7 @@ A file that contains [APT Preferences](https://wiki.debian.org/AptPreferences). 
 
 Example:
 
-```
+```shell
 APT {
   Install-Recommends "false";
 }
@@ -93,7 +92,8 @@ APT {
 Overrides the `/etc/apt/sources.list` file. An empty file may be provided in order to remove upstream packages.
 
 Example:
-```
+
+```shell
 deb http://archive.ubuntu.com/ubuntu/ bionic main universe
 deb http://archive.ubuntu.com/ubuntu/ bionic-security main universe
 deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe
@@ -107,18 +107,19 @@ This file should contain apt packages to install, accepts multiple packages per 
 If this file is included, an `apt-get update` is triggered beforehand.
 
 Example:
-```
+
+```shell
 nginx
 unifont
 ```
 
 #### Specifying package versions
 
-You can specify a package version with '=1.2.3' after the package name. 
+You can specify a package version with '=1.2.3' after the package name.
 
 Example:
 
-```
+```shell
 libgd2-dev=2.1.1
 ```
 
@@ -132,7 +133,7 @@ Requires an empty line at end of file.
 
 Example:
 
-```
+```shell
 ppa:nginx/stable
 deb http://archive.ubuntu.com/ubuntu quantal multiverse
 ```
@@ -144,7 +145,7 @@ Requires an empty line at end of file.
 
 Example:
 
-```
+```shell
 ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true
 ```
 
@@ -158,7 +159,7 @@ Packages are installed in lexicographical order. As such, if any packages depend
 
 Example:
 
-```
+```shell
 $ ls dpkg-packages/
 your-package-0_0.0.1.deb
 ```

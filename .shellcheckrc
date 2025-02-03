@@ -1,0 +1,2 @@
+# SC1091 - Not following: FILE: does not exist (No such file or directory) - <https://github.com/koalaman/shellcheck/wiki/SC1091>
+disable=SC1091
