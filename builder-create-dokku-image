@@ -34,6 +34,7 @@ hook-apt-builder-create-dokku-image() {
 
   dokku_log_info1 "Creating extended app image with custom system packages"
   pushd "$TMP_WORK_DIR" >/dev/null
+  # shellcheck disable=SC2086
   CID=$(tar -c . | "$DOCKER_BIN" container run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -i -a stdin "$DOKKU_IMAGE" /bin/bash -c "mkdir -p /tmp/apt && tar -xC /tmp/apt")
   popd >/dev/null
   if test "$("$DOCKER_BIN" container wait "$CID")" -ne 0; then
@@ -51,6 +52,7 @@ hook-apt-builder-create-dokku-image() {
 
   COMMAND="$(fn-apt-command "$APP" "$DOKKU_IMAGE" "/tmp/apt")"
   DOCKER_RUN_LABEL_ARGS="--label=com.dokku.app-name=$APP"
+  # shellcheck disable=SC2086
   CID=$("$DOCKER_BIN" container run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -d "${ARG_ARRAY[@]}" "$IMAGE:apt" /bin/bash -e -c "$COMMAND")
 
   "$DOCKER_BIN" container attach "$CID"
