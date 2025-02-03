@@ -39,8 +39,7 @@ jobs:
       - name: Clone
         uses: actions/checkout@v4
       - name: Run shellcheck
-        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38
-        # 1.1.0 => 94e0aab03ca135d11a35e5bfc14e6746dc56e7e9
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
 
   shfmt:
     name: shfmt
@@ -49,8 +48,7 @@ jobs:
       - name: Clone
         uses: actions/checkout@v4
       - name: Run shfmt
-        uses: luizm/action-sh-checker@17bd25a6ee188d2b91f677060038f4ba37ba14b2
-        # v0.5.0 => edd0e45ecff35b05f162052b50df50976c1b74fc
+        uses: luizm/action-sh-checker@17bd25a6ee188d2b91f677060038f4ba37ba14b2 # v0.9.0
         env:
           SHFMT_OPTS: -l -bn -ci -i 2 -d
         with:
@@ -63,7 +61,6 @@ jobs:
       - name: Clone
         uses: actions/checkout@v4
       - name: Run yamllint
-        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c
-        # v3.1.1 => 2576378a8e339169678f9939646ee3ee325e845c
+        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c # v3.1.1
         with:
           config_file: ".github/linters/.yamllint.yaml"
