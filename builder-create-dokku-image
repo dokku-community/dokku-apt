@@ -32,11 +32,20 @@ hook-apt-builder-create-dokku-image() {
     return
   fi
 
+  CID_FILE="$(mktemp "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")"
   dokku_log_info1 "Creating extended app image with custom system packages"
   pushd "$TMP_WORK_DIR" >/dev/null
   # shellcheck disable=SC2086
-  CID=$(tar -c . | "$DOCKER_BIN" container run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -i -a stdin "$DOKKU_IMAGE" /bin/bash -c "mkdir -p /tmp/apt && tar -xC /tmp/apt")
+  tar -c . | "$DOCKER_BIN" container run "${DOCKER_RUN_LABEL_ARGS[@]}" $DOKKU_GLOBAL_RUN_ARGS -i -a stdin --cidfile="$CID_FILE" "$DOKKU_IMAGE" /bin/bash -c "mkdir -p /tmp/apt && tar -xC /tmp/apt"
   popd >/dev/null
+
+  CID="$(cat "$CID_FILE")"
+  rm -f "$CID_FILE"
+  if [[ -z "$CID" ]]; then
+    dokku_log_warn "Failure extracting apt files"
+    return 1
+  fi
+
   if test "$("$DOCKER_BIN" container wait "$CID")" -ne 0; then
     dokku_log_warn "Failure extracting apt files"
     return 1
