@@ -42,7 +42,7 @@ hook-apt-builder-create-dokku-image() {
   CID="$(cat "$CID_FILE")"
   rm -f "$CID_FILE"
   if [[ -z "$CID" ]]; then
-    dokku_log_warn "Failure extracting apt files"
+    dokku_log_warn "Failure creating extended app image"
     return 1
   fi
 
