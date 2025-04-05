@@ -22,8 +22,9 @@ hook-apt-builder-create-dokku-image() {
   fi
 
   TMP_WORK_DIR=$(mktemp -d "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")
+  CID_FILE="$(mktemp -u "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")"
   # shellcheck disable=SC2064
-  trap "rm -rf '$TMP_WORK_DIR' >/dev/null" RETURN
+  trap "rm -rf '$TMP_WORK_DIR' '$CID_FILE' >/dev/null" RETURN
   fn-apt-populate-work-dir "$SOURCECODE_WORK_DIR" "$TMP_WORK_DIR"
 
   if [[ "$("$DOCKER_BIN" image ls --quiet "dokku/$APP:$CONTENT_SHA" 2>/dev/null)" != "" ]]; then
@@ -32,7 +33,6 @@ hook-apt-builder-create-dokku-image() {
     return
   fi
 
-  CID_FILE="$(mktemp "/tmp/dokku-${DOKKU_PID}-${FUNCNAME[0]}.XXXXXX")"
   dokku_log_info1 "Creating extended app image with custom system packages"
   pushd "$TMP_WORK_DIR" >/dev/null
   # shellcheck disable=SC2086
